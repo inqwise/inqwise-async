@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java Version](https://img.shields.io/badge/Java-21%2B-blue.svg)](https://openjdk.java.net/projects/jdk/21/)
 [![Coverage](https://img.shields.io/badge/Coverage-77.7%25-yellow.svg)]()
-[![Vert.x](https://img.shields.io/badge/Vert.x-4.5.11%2B-purple.svg)](https://vertx.io/)
+[![Vert.x](https://img.shields.io/badge/Vert.x-5.0.4%2B-purple.svg)](https://vertx.io/)
 Inqwise Async bridges standard Java blocking I/O structures with Vert.x's asynchronous, non-blocking APIs. By providing robust wrappers for traditional Java classes such as {@link java.io.InputStream}, {@link java.io.OutputStream}, {@link java.io.Reader}, {@link java.io.Writer}, and more, Inqwise Async enables developers to integrate existing Java codebases into Vert.x-based reactive applications without disrupting the event loop. This bridge ensures efficient and scalable I/O operations by managing back-pressure and flow control, facilitating the modernization of legacy systems for high-performance, event-driven environments.
 
 ## Table of Contents
