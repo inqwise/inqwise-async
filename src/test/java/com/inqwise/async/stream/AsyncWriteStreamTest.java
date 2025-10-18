@@ -119,8 +119,10 @@ public class AsyncWriteStreamTest {
         AsyncWriteStream asyncWriteStream = new AsyncWriteStream(vertx, outputStream);
 
         asyncWriteStream
-            .exceptionHandler(testContext::failNow)
-            .end(ar -> {
+            .exceptionHandler(testContext::failNow);
+            
+        asyncWriteStream.end()
+            .onComplete(ar -> {
                 assertTrue(ar.succeeded());
 
                 // Try to write after ending the stream

@@ -1,5 +1,12 @@
 # Inqwise Async - Blocking to Vert.x Non-Blocking Bridge
 
+[![CI](https://github.com/inqwise/inqwise-async/actions/workflows/ci.yml/badge.svg)](https://github.com/inqwise/inqwise-async/actions/workflows/ci.yml)
+[![Release](https://github.com/inqwise/inqwise-async/actions/workflows/release.yml/badge.svg)](https://github.com/inqwise/inqwise-async/actions/workflows/release.yml)
+[![CodeQL](https://github.com/inqwise/inqwise-async/actions/workflows/codeql.yml/badge.svg)](https://github.com/inqwise/inqwise-async/actions/workflows/codeql.yml)
+[![Snyk Security](https://github.com/inqwise/inqwise-async/actions/workflows/snyk.yml/badge.svg)](https://github.com/inqwise/inqwise-async/actions/workflows/snyk.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.inqwise/inqwise-async.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.inqwise%22%20AND%20a:%22inqwise-async%22)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Java Version](https://img.shields.io/badge/Java-21%2B-blue.svg)](https://openjdk.java.net/projects/jdk/21/)
 Inqwise Async bridges standard Java blocking I/O structures with Vert.x's asynchronous, non-blocking APIs. By providing robust wrappers for traditional Java classes such as {@link java.io.InputStream}, {@link java.io.OutputStream}, {@link java.io.Reader}, {@link java.io.Writer}, and more, Inqwise Async enables developers to integrate existing Java codebases into Vert.x-based reactive applications without disrupting the event loop. This bridge ensures efficient and scalable I/O operations by managing back-pressure and flow control, facilitating the modernization of legacy systems for high-performance, event-driven environments.
 
 ## Table of Contents
@@ -39,7 +46,7 @@ To include the Inqwise Async library in your Maven project, add the following de
 <dependency>
     <groupId>com.inqwise</groupId>
     <artifactId>inqwise-async</artifactId>
-    <version>1.0.0</version>
+    <version>${latest.version}</version>
 </dependency>
 ```
 

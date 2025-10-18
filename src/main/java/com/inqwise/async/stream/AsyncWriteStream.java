@@ -137,9 +137,16 @@ public class AsyncWriteStream implements WriteStream<Buffer> {
      * @param data    the {@link Buffer} containing data to write
      * @param handler the handler to be notified upon completion or failure of the write operation
      */
-    @Override
     public void write(Buffer data, Handler<AsyncResult<Void>> handler) {
         write(data).onComplete(handler);
+    }
+
+    /**
+     * Ends the stream.
+     */
+    @Override
+    public Future<Void> end() {
+        return endInternal(null);
     }
 
     /**
@@ -151,13 +158,20 @@ public class AsyncWriteStream implements WriteStream<Buffer> {
      *
      * @param handler the handler to be notified when the stream is successfully closed or if an error occurs
      */
-    @Override
     public void end(Handler<AsyncResult<Void>> handler) {
+        endInternal(handler);
+    }
+
+    /**
+     * Internal method to handle stream ending logic.
+     */
+    private Future<Void> endInternal(Handler<AsyncResult<Void>> handler) {
         if (closed) {
+            Future<Void> result = Future.succeededFuture();
             if (handler != null) {
-                handler.handle(Future.succeededFuture());
+                handler.handle(result);
             }
-            return;
+            return result;
         }
         closed = true;
 
@@ -182,6 +196,7 @@ public class AsyncWriteStream implements WriteStream<Buffer> {
         if (handler != null) {
             endFuture.onComplete(handler);
         }
+        return endFuture;
     }
 
     /**

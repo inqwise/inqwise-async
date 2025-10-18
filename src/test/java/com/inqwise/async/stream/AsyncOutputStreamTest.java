@@ -115,7 +115,6 @@ public class AsyncOutputStreamTest {
             return Future.succeededFuture();
         }
 
-        @Override
         public void write(Buffer data, Handler<AsyncResult<Void>> handler) {
             receivedBuffer.appendBuffer(data);
             handler.handle(Future.succeededFuture());
@@ -126,7 +125,6 @@ public class AsyncOutputStreamTest {
             return Future.succeededFuture();
         }
 
-        @Override
         public void end(Handler<AsyncResult<Void>> handler) {
             handler.handle(Future.succeededFuture());
         }
@@ -169,7 +167,6 @@ public class AsyncOutputStreamTest {
             return failedFuture;
         }
 
-        @Override
         public void write(Buffer data, Handler<AsyncResult<Void>> handler) {
             Future<Void> failedFuture = Future.failedFuture(new RuntimeException("Test exception"));
             if (exceptionHandler != null) {
@@ -183,7 +180,6 @@ public class AsyncOutputStreamTest {
             return Future.succeededFuture();
         }
 
-        @Override
         public void end(Handler<AsyncResult<Void>> handler) {
             handler.handle(Future.succeededFuture());
         }
@@ -235,7 +231,6 @@ public class AsyncOutputStreamTest {
             return Future.succeededFuture();
         }
 
-        @Override
         public void write(Buffer data, Handler<AsyncResult<Void>> handler) {
             receivedBuffer.appendBuffer(data);
             writeQueueFull = true;
@@ -256,7 +251,6 @@ public class AsyncOutputStreamTest {
             return Future.succeededFuture();
         }
 
-        @Override
         public void end(Handler<AsyncResult<Void>> handler) {
             handler.handle(Future.succeededFuture());
         }

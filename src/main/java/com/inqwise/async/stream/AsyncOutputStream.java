@@ -90,13 +90,15 @@ public class AsyncOutputStream extends OutputStream {
             CompletableFuture<Void> writeFuture = new CompletableFuture<>();
             Buffer buffer = Buffer.buffer().appendBytes(b, off, len);
 
-            vertx.runOnContext(v -> writeStream.write(buffer, ar -> {
-                if (ar.succeeded()) {
-                    writeFuture.complete(null);
-                } else {
-                    writeFuture.completeExceptionally(ar.cause());
-                }
-            }));
+            vertx.runOnContext(v -> {
+                writeStream.write(buffer).onComplete(ar -> {
+                    if (ar.succeeded()) {
+                        writeFuture.complete(null);
+                    } else {
+                        writeFuture.completeExceptionally(ar.cause());
+                    }
+                });
+            });
 
             try {
                 writeFuture.get();
@@ -142,13 +144,15 @@ public class AsyncOutputStream extends OutputStream {
             Future<Void> future = executor.submit(() -> {
                 CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 
-                vertx.runOnContext(v -> writeStream.end(ar -> {
-                    if (ar.succeeded()) {
-                        closeFuture.complete(null);
-                    } else {
-                        closeFuture.completeExceptionally(ar.cause());
-                    }
-                }));
+                vertx.runOnContext(v -> {
+                    writeStream.end().onComplete(ar -> {
+                        if (ar.succeeded()) {
+                            closeFuture.complete(null);
+                        } else {
+                            closeFuture.completeExceptionally(ar.cause());
+                        }
+                    });
+                });
 
                 try {
                     closeFuture.get();
