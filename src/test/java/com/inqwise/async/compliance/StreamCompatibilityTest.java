@@ -139,7 +139,7 @@ public class StreamCompatibilityTest {
                 writeStream.write(buffer).onFailure(testContext::failNow);
             })
             .endHandler(v -> {
-                writeStream.end(ar -> {
+                writeStream.end().onComplete(ar -> {
                     if (ar.succeeded()) {
                         String result = output.toString();
                         assertEquals(testData, result);
@@ -180,7 +180,7 @@ public class StreamCompatibilityTest {
                 writeStream.write(buffer).onFailure(testContext::failNow);
             })
             .endHandler(v -> {
-                writeStream.end(ar -> {
+                writeStream.end().onComplete(ar -> {
                     if (ar.succeeded()) {
                         assertEquals(dataSize, bytesProcessed.get());
                         assertTrue(chunksProcessed.get() > 1, "Should have processed multiple chunks");
