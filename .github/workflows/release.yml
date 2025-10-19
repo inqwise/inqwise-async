@@ -71,22 +71,22 @@ jobs:
           # The Maven release process already built the correct artifacts
           # We need to find them in the Maven local repository after release:perform
           VERSION="${{ github.event.inputs.version }}"
-          MAVEN_REPO="$HOME/.m2/repository/com/inqwise/difference/inqwise-difference/$VERSION"
+          MAVEN_REPO="$HOME/.m2/repository/com/inqwise/async/inqwise-async/$VERSION"
 
           mkdir -p release-assets
 
           # Copy the release artifacts from Maven local repository
           if [ -d "$MAVEN_REPO" ]; then
-            cp "$MAVEN_REPO/inqwise-difference-$VERSION.jar" release-assets/ || echo "Main JAR not found"
-            cp "$MAVEN_REPO/inqwise-difference-$VERSION-sources.jar" release-assets/ || echo "Sources JAR not found"
-            cp "$MAVEN_REPO/inqwise-difference-$VERSION-javadoc.jar" release-assets/ || echo "Javadoc JAR not found"
+            cp "$MAVEN_REPO/inqwise-async-$VERSION.jar" release-assets/ || echo "Main JAR not found"
+            cp "$MAVEN_REPO/inqwise-async-$VERSION-sources.jar" release-assets/ || echo "Sources JAR not found"
+            cp "$MAVEN_REPO/inqwise-async-$VERSION-javadoc.jar" release-assets/ || echo "Javadoc JAR not found"
           else
             echo "Maven repository directory not found: $MAVEN_REPO"
             echo "Falling back to building artifacts with correct version"
             # Checkout the release tag to build the correct version
             git checkout "v$VERSION"
             mvn clean package -P sonatype-oss-release -DskipTests
-            cp target/inqwise-difference-*.jar release-assets/
+            cp target/inqwise-async-*.jar release-assets/
           fi
 
           # List what we actually have
@@ -109,8 +109,8 @@ jobs:
             ## 📦 Maven Central
             ```xml
             <dependency>
-                <groupId>com.inqwise.difference</groupId>
-                <artifactId>inqwise-difference</artifactId>
+                <groupId>com.inqwise.async</groupId>
+                <artifactId>inqwise-async</artifactId>
                 <version>${{ github.event.inputs.version }}</version>
             </dependency>
             ```
@@ -122,8 +122,8 @@ jobs:
             - All artifacts GPG signed
 
             ## 🔗 Links
-            - [Maven Central](https://central.sonatype.com/artifact/com.inqwise.difference/inqwise-difference/${{ github.event.inputs.version }})
-            - [Documentation](https://github.com/inqwise/inqwise-difference#readme)
+            - [Maven Central](https://central.sonatype.com/artifact/com.inqwise.async/inqwise-async/${{ github.event.inputs.version }})
+            - [Documentation](https://github.com/inqwise/inqwise-async#readme)
 
             ---
             *Released automatically via GitHub Actions*
