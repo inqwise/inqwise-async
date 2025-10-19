@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.inqwise</groupId>
 	<artifactId>inqwise-async</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 	<description>
         The Inqwise Async library seamlessly bridges standard Java blocking I/O structures with Vert.x's asynchronous, non-blocking APIs. By providing robust wrappers for traditional Java classes such as {@link java.io.InputStream}, {@link java.io.OutputStream}, {@link java.io.Reader}, {@link java.io.Writer}, and more, Inqwise Async enables developers to integrate existing Java codebases into Vert.x-based reactive applications without disrupting the event loop. This integration ensures efficient and scalable I/O operations by managing back-pressure and flow control, facilitating the modernization of legacy systems for high-performance, event-driven environments.
     </description>
@@ -40,10 +36,10 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/inqwise/inqwise-async.git</connection>
-		<developerConnection
-        >scm:git:https://github.com/inqwise/inqwise-async.git</developerConnection>
+		<developerConnection>scm:git:https://github.com/inqwise/inqwise-async.git</developerConnection>
 		<url>https://github.com/inqwise/inqwise-async</url>
-	</scm>
+	  <tag>v1.1.0</tag>
+  </scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -181,8 +177,7 @@
 									<excludes>
 										<exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
 									</excludes>
-									<message
-                                    >Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
+									<message>Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
 								</bannedPlugins>
 								<requireMavenVersion>
 									<version>${maven.version}</version>
@@ -200,8 +195,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.5.4</version>
 				<configuration>
-					<argLine
-                    >@{argLine} --illegal-access=permit -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory</argLine>
+					<argLine>@{argLine} --illegal-access=permit -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory</argLine>
 				</configuration>
 				<dependencies>
 					<dependency>
@@ -232,8 +226,7 @@
 					<forceLegacyJavacApi>true</forceLegacyJavacApi>
 					<release>${java.version}</release>
 					<generatedSourcesDirectory>src/main/generated</generatedSourcesDirectory>
-					<generatedTestSourcesDirectory
-                    >src/test/generated</generatedTestSourcesDirectory>
+					<generatedTestSourcesDirectory>src/test/generated</generatedTestSourcesDirectory>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -345,8 +338,7 @@
                         <version>0.9.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <publishingServerId
-                            >sonatype-oss-release</publishingServerId>
+                            <publishingServerId>sonatype-oss-release</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <waitUntil>published</waitUntil>
                             <checksums>required</checksums>
