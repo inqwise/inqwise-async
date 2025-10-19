@@ -90,6 +90,11 @@ public class RFCComplianceTest {
 
         asyncReadStream
             .exceptionHandler(testContext::failNow)
+            .endHandler(v -> {
+                assertEquals(testData.length(), dataReceived.get());
+                assertFalse(eventLoopBlocked.get());
+                testContext.completeNow();
+            })
             .handler(buffer -> {
                 logger.debug("handler");
                 dataReceived.addAndGet(buffer.length());
@@ -98,11 +103,6 @@ public class RFCComplianceTest {
                     Thread.currentThread().getName().contains("eventloop"),
                     "Data handler should execute on event loop"
                 );
-            })
-            .endHandler(v -> {
-                assertEquals(testData.length(), dataReceived.get());
-                assertFalse(eventLoopBlocked.get());
-                testContext.completeNow();
             });
     }
 
