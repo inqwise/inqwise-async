@@ -4,26 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
-
 import com.inqwise.async.stream.AsyncInputStream;
 import com.inqwise.async.stream.AsyncReadStream;
 import com.inqwise.async.stream.AsyncWriteStream;
-
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -32,6 +15,20 @@ import io.vertx.junit5.RunTestOnContext;
 import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
  * RFC Compliance tests for Inqwise Async library.
@@ -41,54 +38,66 @@ import io.vertx.junit5.VertxTestContext;
 @ExtendWith(VertxExtension.class)
 @Timeout(10000)
 public class RFCComplianceTest {
-	private static final Logger logger = LogManager.getLogger(RFCComplianceTest.class);
-	
-	@RegisterExtension
-	RunTestOnContext rtoc = new RunTestOnContext();
-	Vertx vertx;
-	
-	@BeforeEach
-	void prepare(VertxTestContext testContext) {
-		vertx = rtoc.vertx();
-	    // Prepare something on a Vert.x event-loop thread
-	    // The thread changes with each test instance
-		testContext.completeNow();
-	}
-	
-	@AfterEach
-	void cleanUp(VertxTestContext testContext) {
-		// Clean things up on the same Vert.x event-loop thread
-		// that called prepare and foo
-		testContext.completeNow();
-	}
-	
+
+    private static final Logger logger = LogManager.getLogger(
+        RFCComplianceTest.class
+    );
+
+    @RegisterExtension
+    RunTestOnContext rtoc = new RunTestOnContext();
+
+    Vertx vertx;
+
+    @BeforeEach
+    void prepare(VertxTestContext testContext) {
+        vertx = rtoc.vertx();
+        // Prepare something on a Vert.x event-loop thread
+        // The thread changes with each test instance
+        testContext.completeNow();
+    }
+
+    @AfterEach
+    void cleanUp(VertxTestContext testContext) {
+        // Clean things up on the same Vert.x event-loop thread
+        // that called prepare and foo
+        testContext.completeNow();
+    }
+
     /**
      * RFC-001: Verify that blocking I/O operations do not block the Vert.x event loop
      */
     @Test
-    public void testNonBlockingEventLoopCompliance(VertxTestContext testContext) throws Exception {
+    public void testNonBlockingEventLoopCompliance(VertxTestContext testContext)
+        throws Exception {
         String testData = "Event loop should not be blocked";
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(testData.getBytes());
-        
-        AsyncReadStream asyncReadStream = new AsyncReadStream(vertx, inputStream);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(
+            testData.getBytes()
+        );
+
+        AsyncReadStream asyncReadStream = new AsyncReadStream(
+            vertx,
+            inputStream
+        );
         AtomicBoolean eventLoopBlocked = new AtomicBoolean(false);
         AtomicInteger dataReceived = new AtomicInteger(0);
-        
+
         // Schedule a task to run on the event loop while reading
         vertx.setTimer(100, id -> {
             if (Thread.currentThread().getName().contains("eventloop")) {
                 eventLoopBlocked.set(false); // Event loop is responsive
             }
         });
-        
+
         asyncReadStream
             .exceptionHandler(testContext::failNow)
             .handler(buffer -> {
-            	logger.debug("handler");
+                logger.debug("handler");
                 dataReceived.addAndGet(buffer.length());
                 // Verify we're on the event loop thread
-                assertTrue(Thread.currentThread().getName().contains("eventloop"),
-                    "Data handler should execute on event loop");
+                assertTrue(
+                    Thread.currentThread().getName().contains("eventloop"),
+                    "Data handler should execute on event loop"
+                );
             })
             .endHandler(v -> {
                 assertEquals(testData.length(), dataReceived.get());
@@ -101,12 +110,16 @@ public class RFCComplianceTest {
      * RFC-002: Verify proper resource cleanup and lifecycle management
      */
     @Test
-    public void testResourceLifecycleCompliance(VertxTestContext testContext) throws Exception {
+    public void testResourceLifecycleCompliance(VertxTestContext testContext)
+        throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        AsyncWriteStream asyncWriteStream = new AsyncWriteStream(vertx, outputStream);
-        
+        AsyncWriteStream asyncWriteStream = new AsyncWriteStream(
+            vertx,
+            outputStream
+        );
+
         Buffer testBuffer = Buffer.buffer("Resource lifecycle test");
-        
+
         asyncWriteStream
             .exceptionHandler(testContext::failNow)
             .write(testBuffer)
@@ -115,7 +128,10 @@ public class RFCComplianceTest {
                     asyncWriteStream.end(endResult -> {
                         if (endResult.succeeded()) {
                             // Verify data was written
-                            assertEquals(testBuffer.toString(), outputStream.toString());
+                            assertEquals(
+                                testBuffer.toString(),
+                                outputStream.toString()
+                            );
                             testContext.completeNow();
                         } else {
                             testContext.failNow(endResult.cause());
@@ -131,24 +147,27 @@ public class RFCComplianceTest {
      * RFC-003: Verify back-pressure handling in AsyncInputStream
      */
     @Test
-    public void testBackPressureCompliance(VertxTestContext testContext) throws Exception {
+    public void testBackPressureCompliance(VertxTestContext testContext)
+        throws Exception {
         // Create a large buffer to trigger back-pressure
         byte[] largeData = new byte[64 * 1024]; // 64KB
         for (int i = 0; i < largeData.length; i++) {
             largeData[i] = (byte) (i % 256);
         }
-        
+
         ReadStream<Buffer> mockReadStream = new ReadStream<Buffer>() {
             private Handler<Buffer> handler;
             private Handler<Void> endHandler;
             private boolean paused = false;
             private final AtomicBoolean ended = new AtomicBoolean(false);
-            
+
             @Override
-            public ReadStream<Buffer> exceptionHandler(Handler<Throwable> handler) {
+            public ReadStream<Buffer> exceptionHandler(
+                Handler<Throwable> handler
+            ) {
                 return this;
             }
-            
+
             @Override
             public ReadStream<Buffer> handler(Handler<Buffer> handler) {
                 this.handler = handler;
@@ -162,57 +181,59 @@ public class RFCComplianceTest {
                 }
                 return this;
             }
-            
+
             @Override
             public ReadStream<Buffer> pause() {
                 paused = true;
                 return this;
             }
-            
+
             @Override
             public ReadStream<Buffer> resume() {
                 paused = false;
                 return this;
             }
-            
+
             @Override
             public ReadStream<Buffer> fetch(long amount) {
                 return this;
             }
-            
+
             @Override
             public ReadStream<Buffer> endHandler(Handler<Void> endHandler) {
                 this.endHandler = endHandler;
                 return this;
             }
-            
+
             private void end() {
                 if (ended.compareAndSet(false, true) && endHandler != null) {
                     vertx.runOnContext(v -> endHandler.handle(null));
                 }
             }
         };
-        
-        AsyncInputStream asyncInputStream = new AsyncInputStream(mockReadStream);
-        
+
+        AsyncInputStream asyncInputStream = new AsyncInputStream(
+            mockReadStream
+        );
+
         // Read data and verify back-pressure works
         CompletableFuture<Void> readFuture = CompletableFuture.runAsync(() -> {
             try {
                 int totalRead = 0;
                 byte[] buffer = new byte[1024];
                 int bytesRead;
-                
+
                 while ((bytesRead = asyncInputStream.read(buffer)) != -1) {
                     totalRead += bytesRead;
                 }
-                
+
                 assertEquals(largeData.length, totalRead);
                 asyncInputStream.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
-        
+
         readFuture.whenComplete((result, throwable) -> {
             if (throwable != null) {
                 testContext.failNow(throwable);
@@ -226,41 +247,60 @@ public class RFCComplianceTest {
      * RFC-004: Verify thread safety of stream operations
      */
     @Test
-    public void testThreadSafetyCompliance(VertxTestContext testContext) throws Exception {
+    public void testThreadSafetyCompliance(VertxTestContext testContext)
+        throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        AsyncWriteStream asyncWriteStream = new AsyncWriteStream(vertx, outputStream);
-        
+        AsyncWriteStream asyncWriteStream = new AsyncWriteStream(
+            vertx,
+            outputStream
+        );
+
         int numThreads = 5;
         int messagesPerThread = 10;
         AtomicInteger completedWrites = new AtomicInteger(0);
-        AtomicInteger expectedWrites = new AtomicInteger(numThreads * messagesPerThread);
-        
+        AtomicInteger expectedWrites = new AtomicInteger(
+            numThreads * messagesPerThread
+        );
+
         asyncWriteStream.exceptionHandler(testContext::failNow);
-        
+
         for (int thread = 0; thread < numThreads; thread++) {
             final int threadId = thread;
             Thread writerThread = new Thread(() -> {
                 for (int msg = 0; msg < messagesPerThread; msg++) {
-                    Buffer buffer = Buffer.buffer("Thread" + threadId + "Msg" + msg + "\n");
-                    asyncWriteStream.write(buffer).onComplete(ar -> {
-                        if (ar.succeeded()) {
-                            if (completedWrites.incrementAndGet() == expectedWrites.get()) {
-                                asyncWriteStream.end(endAr -> {
-                                    if (endAr.succeeded()) {
-                                        // Verify all messages were written
-                                        String result = outputStream.toString();
-                                        long lineCount = result.lines().count();
-                                        assertEquals(expectedWrites.get(), lineCount);
-                                        testContext.completeNow();
-                                    } else {
-                                        testContext.failNow(endAr.cause());
-                                    }
-                                });
+                    Buffer buffer = Buffer.buffer(
+                        "Thread" + threadId + "Msg" + msg + "\n"
+                    );
+                    asyncWriteStream
+                        .write(buffer)
+                        .onComplete(ar -> {
+                            if (ar.succeeded()) {
+                                if (
+                                    completedWrites.incrementAndGet() ==
+                                    expectedWrites.get()
+                                ) {
+                                    asyncWriteStream.end(endAr -> {
+                                        if (endAr.succeeded()) {
+                                            // Verify all messages were written
+                                            String result =
+                                                outputStream.toString();
+                                            long lineCount = result
+                                                .lines()
+                                                .count();
+                                            assertEquals(
+                                                expectedWrites.get(),
+                                                lineCount
+                                            );
+                                            testContext.completeNow();
+                                        } else {
+                                            testContext.failNow(endAr.cause());
+                                        }
+                                    });
+                                }
+                            } else {
+                                testContext.failNow(ar.cause());
                             }
-                        } else {
-                            testContext.failNow(ar.cause());
-                        }
-                    });
+                        });
                 }
             });
             writerThread.start();
@@ -271,10 +311,12 @@ public class RFCComplianceTest {
      * RFC-005: Verify proper exception propagation and error handling
      */
     @Test
-    public void testExceptionPropagationCompliance(VertxTestContext testContext) {
+    public void testExceptionPropagationCompliance(
+        VertxTestContext testContext
+    ) {
         InputStream faultyStream = new InputStream() {
             private boolean firstCall = true;
-            
+
             @Override
             public int read() throws IOException {
                 if (firstCall) {
@@ -284,55 +326,75 @@ public class RFCComplianceTest {
                 throw new IOException("Simulated I/O error");
             }
         };
-        
-        AsyncReadStream asyncReadStream = new AsyncReadStream(vertx, faultyStream);
+
+        AsyncReadStream asyncReadStream = new AsyncReadStream(
+            vertx,
+            faultyStream
+        );
         AtomicBoolean dataReceived = new AtomicBoolean(false);
-        
+
         asyncReadStream
-            .handler(buffer -> {
-                dataReceived.set(true);
-                assertEquals('H', buffer.getByte(0));
-            })
             .exceptionHandler(throwable -> {
-                assertTrue(dataReceived.get(), "Should have received some data before exception");
+                assertTrue(
+                    dataReceived.get(),
+                    "Should have received some data before exception"
+                );
                 assertTrue(throwable instanceof IOException);
                 assertEquals("Simulated I/O error", throwable.getMessage());
                 testContext.completeNow();
             })
-            .endHandler(v -> testContext.failNow("Should not reach end handler when exception occurs"));
+            .endHandler(v ->
+                testContext.failNow(
+                    "Should not reach end handler when exception occurs"
+                )
+            )
+            .handler(buffer -> {
+                dataReceived.set(true);
+                assertEquals('H', buffer.getByte(0));
+            });
     }
 
     /**
      * RFC-006: Verify compliance with stream pause/resume semantics
      */
     @Test
-    public void testStreamControlCompliance(VertxTestContext testContext) throws Exception {
-        String testData = "Pause and resume test data that is longer than usual";
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(testData.getBytes());
-        
-        AsyncReadStream asyncReadStream = new AsyncReadStream(vertx, inputStream);
+    public void testStreamControlCompliance(VertxTestContext testContext)
+        throws Exception {
+        String testData =
+            "Pause and resume test data that is longer than usual";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(
+            testData.getBytes()
+        );
+
+        AsyncReadStream asyncReadStream = new AsyncReadStream(
+            vertx,
+            inputStream
+        );
         AtomicInteger chunksReceived = new AtomicInteger(0);
         AtomicBoolean wasPaused = new AtomicBoolean(false);
         StringBuilder result = new StringBuilder();
-        
+
         asyncReadStream
             .exceptionHandler(testContext::failNow)
             .handler(buffer -> {
                 int chunks = chunksReceived.incrementAndGet();
                 result.append(buffer.toString());
-                
+
                 if (chunks == 1) {
                     // Pause after first chunk
                     asyncReadStream.pause();
                     wasPaused.set(true);
-                    
+
                     // Resume after a delay
                     vertx.setTimer(100, id -> asyncReadStream.resume());
                 }
             })
             .endHandler(v -> {
                 assertTrue(wasPaused.get(), "Stream should have been paused");
-                assertTrue(chunksReceived.get() >= 1, "Should have received at least one chunk");
+                assertTrue(
+                    chunksReceived.get() >= 1,
+                    "Should have received at least one chunk"
+                );
                 assertEquals(testData, result.toString());
                 testContext.completeNow();
             });
