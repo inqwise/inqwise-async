@@ -93,14 +93,17 @@ public class ReadStreamExample {
         InputStream inputStream = new FileInputStream("example.txt");
         ReadStream<Buffer> readStream = new AsyncReadStream(vertx, inputStream);
 
-        readStream.handler(buffer -> {
-            System.out.println("Received data: " + buffer.toString());
-        }).exceptionHandler(err -> {
-            System.err.println("Error: " + err.getMessage());
-        }).endHandler(v -> {
-            System.out.println("Stream has ended.");
-            vertx.close();
-        });
+        readStream
+            .exceptionHandler(err -> {
+                System.err.println("Error: " + err.getMessage());
+            })
+            .endHandler(v -> {
+                System.out.println("Stream has ended.");
+                vertx.close();
+            })
+            .handler(buffer -> {
+                System.out.println("Received data: " + buffer.toString());
+            });
     }
 }
 ```
