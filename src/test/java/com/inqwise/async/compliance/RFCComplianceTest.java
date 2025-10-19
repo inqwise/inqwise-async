@@ -1,27 +1,37 @@
 package com.inqwise.async.compliance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import com.inqwise.async.stream.AsyncInputStream;
-import com.inqwise.async.stream.AsyncOutputStream;
 import com.inqwise.async.stream.AsyncReadStream;
 import com.inqwise.async.stream.AsyncWriteStream;
+
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
-import io.vertx.core.streams.WriteStream;
+import io.vertx.junit5.RunTestOnContext;
 import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.io.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * RFC Compliance tests for Inqwise Async library.
@@ -31,12 +41,32 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(VertxExtension.class)
 @Timeout(10000)
 public class RFCComplianceTest {
-
+	private static final Logger logger = LogManager.getLogger(RFCComplianceTest.class);
+	
+	@RegisterExtension
+	RunTestOnContext rtoc = new RunTestOnContext();
+	Vertx vertx;
+	
+	@BeforeEach
+	void prepare(VertxTestContext testContext) {
+		vertx = rtoc.vertx();
+	    // Prepare something on a Vert.x event-loop thread
+	    // The thread changes with each test instance
+		testContext.completeNow();
+	}
+	
+	@AfterEach
+	void cleanUp(VertxTestContext testContext) {
+		// Clean things up on the same Vert.x event-loop thread
+		// that called prepare and foo
+		testContext.completeNow();
+	}
+	
     /**
      * RFC-001: Verify that blocking I/O operations do not block the Vert.x event loop
      */
     @Test
-    public void testNonBlockingEventLoopCompliance(Vertx vertx, VertxTestContext testContext) throws Exception {
+    public void testNonBlockingEventLoopCompliance(VertxTestContext testContext) throws Exception {
         String testData = "Event loop should not be blocked";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(testData.getBytes());
         
@@ -45,7 +75,7 @@ public class RFCComplianceTest {
         AtomicInteger dataReceived = new AtomicInteger(0);
         
         // Schedule a task to run on the event loop while reading
-        vertx.setTimer(50, id -> {
+        vertx.setTimer(100, id -> {
             if (Thread.currentThread().getName().contains("eventloop")) {
                 eventLoopBlocked.set(false); // Event loop is responsive
             }
@@ -54,6 +84,7 @@ public class RFCComplianceTest {
         asyncReadStream
             .exceptionHandler(testContext::failNow)
             .handler(buffer -> {
+            	logger.debug("handler");
                 dataReceived.addAndGet(buffer.length());
                 // Verify we're on the event loop thread
                 assertTrue(Thread.currentThread().getName().contains("eventloop"),
@@ -70,7 +101,7 @@ public class RFCComplianceTest {
      * RFC-002: Verify proper resource cleanup and lifecycle management
      */
     @Test
-    public void testResourceLifecycleCompliance(Vertx vertx, VertxTestContext testContext) throws Exception {
+    public void testResourceLifecycleCompliance(VertxTestContext testContext) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         AsyncWriteStream asyncWriteStream = new AsyncWriteStream(vertx, outputStream);
         
@@ -100,7 +131,7 @@ public class RFCComplianceTest {
      * RFC-003: Verify back-pressure handling in AsyncInputStream
      */
     @Test
-    public void testBackPressureCompliance(Vertx vertx, VertxTestContext testContext) throws Exception {
+    public void testBackPressureCompliance(VertxTestContext testContext) throws Exception {
         // Create a large buffer to trigger back-pressure
         byte[] largeData = new byte[64 * 1024]; // 64KB
         for (int i = 0; i < largeData.length; i++) {
@@ -195,7 +226,7 @@ public class RFCComplianceTest {
      * RFC-004: Verify thread safety of stream operations
      */
     @Test
-    public void testThreadSafetyCompliance(Vertx vertx, VertxTestContext testContext) throws Exception {
+    public void testThreadSafetyCompliance(VertxTestContext testContext) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         AsyncWriteStream asyncWriteStream = new AsyncWriteStream(vertx, outputStream);
         
@@ -240,7 +271,7 @@ public class RFCComplianceTest {
      * RFC-005: Verify proper exception propagation and error handling
      */
     @Test
-    public void testExceptionPropagationCompliance(Vertx vertx, VertxTestContext testContext) {
+    public void testExceptionPropagationCompliance(VertxTestContext testContext) {
         InputStream faultyStream = new InputStream() {
             private boolean firstCall = true;
             
@@ -275,7 +306,7 @@ public class RFCComplianceTest {
      * RFC-006: Verify compliance with stream pause/resume semantics
      */
     @Test
-    public void testStreamControlCompliance(Vertx vertx, VertxTestContext testContext) throws Exception {
+    public void testStreamControlCompliance(VertxTestContext testContext) throws Exception {
         String testData = "Pause and resume test data that is longer than usual";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(testData.getBytes());
         
