@@ -376,6 +376,15 @@ public class RFCComplianceTest {
 
         asyncReadStream
             .exceptionHandler(testContext::failNow)
+            .endHandler(v -> {
+                assertTrue(wasPaused.get(), "Stream should have been paused");
+                assertTrue(
+                    chunksReceived.get() >= 1,
+                    "Should have received at least one chunk"
+                );
+                assertEquals(testData, result.toString());
+                testContext.completeNow();
+            })
             .handler(buffer -> {
                 int chunks = chunksReceived.incrementAndGet();
                 result.append(buffer.toString());
@@ -388,15 +397,6 @@ public class RFCComplianceTest {
                     // Resume after a delay
                     vertx.setTimer(100, id -> asyncReadStream.resume());
                 }
-            })
-            .endHandler(v -> {
-                assertTrue(wasPaused.get(), "Stream should have been paused");
-                assertTrue(
-                    chunksReceived.get() >= 1,
-                    "Should have received at least one chunk"
-                );
-                assertEquals(testData, result.toString());
-                testContext.completeNow();
             });
     }
 }

@@ -88,15 +88,15 @@ public class AsyncReadStreamTest {
 
         asyncReadStream
             .exceptionHandler(testContext::failNow)
+            .endHandler(v -> {
+                assertEquals(data, result.toString());
+                testContext.completeNow();
+            })
             .handler(buffer -> {
                 result.append(buffer.toString());
                 asyncReadStream.pause();
 
                 vertx.setTimer(100, id -> asyncReadStream.resume());
-            })
-            .endHandler(v -> {
-                assertEquals(data, result.toString());
-                testContext.completeNow();
             });
     }
 
@@ -116,14 +116,14 @@ public class AsyncReadStreamTest {
 
         asyncReadStream
             .exceptionHandler(testContext::failNow)
+            .endHandler(v -> {
+                assertArrayEquals(largeData, result);
+                testContext.completeNow();
+            })
             .handler(buffer -> {
                 byte[] bytes = buffer.getBytes();
                 System.arraycopy(bytes, 0, result, offset[0], bytes.length);
                 offset[0] += bytes.length;
-            })
-            .endHandler(v -> {
-                assertArrayEquals(largeData, result);
-                testContext.completeNow();
             });
     }
 }

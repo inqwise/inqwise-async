@@ -77,12 +77,12 @@ public class StreamCompatibilityTest {
 
         asyncReadStream
             .exceptionHandler(testContext::failNow)
-            .handler(buffer -> {
-                result.append(buffer.toString());
-            })
             .endHandler(v -> {
                 assertEquals(originalData, result.toString());
                 testContext.completeNow();
+            })
+            .handler(buffer -> {
+                result.append(buffer.toString());
             });
     }
 
@@ -141,9 +141,6 @@ public class StreamCompatibilityTest {
 
         readStream
             .exceptionHandler(testContext::failNow)
-            .handler(buffer -> {
-                writeStream.write(buffer).onFailure(testContext::failNow);
-            })
             .endHandler(v -> {
                 writeStream.end(ar -> {
                     if (ar.succeeded()) {
@@ -154,6 +151,9 @@ public class StreamCompatibilityTest {
                         testContext.failNow(ar.cause());
                     }
                 });
+            })
+            .handler(buffer -> {
+                writeStream.write(buffer).onFailure(testContext::failNow);
             });
     }
 
@@ -175,9 +175,6 @@ public class StreamCompatibilityTest {
 
         readStream
             .exceptionHandler(testContext::failNow)
-            .handler(buffer -> {
-                writeStream.write(buffer).onFailure(testContext::failNow);
-            })
             .endHandler(v -> {
                 writeStream
                     .end()
@@ -190,6 +187,9 @@ public class StreamCompatibilityTest {
                             testContext.failNow(ar.cause());
                         }
                     });
+            })
+            .handler(buffer -> {
+                writeStream.write(buffer).onFailure(testContext::failNow);
             });
     }
 
@@ -217,11 +217,6 @@ public class StreamCompatibilityTest {
 
         readStream
             .exceptionHandler(testContext::failNow)
-            .handler(buffer -> {
-                chunksProcessed.incrementAndGet();
-                bytesProcessed.addAndGet(buffer.length());
-                writeStream.write(buffer).onFailure(testContext::failNow);
-            })
             .endHandler(v -> {
                 writeStream
                     .end()
@@ -242,6 +237,11 @@ public class StreamCompatibilityTest {
                             testContext.failNow(ar.cause());
                         }
                     });
+            })
+            .handler(buffer -> {
+                chunksProcessed.incrementAndGet();
+                bytesProcessed.addAndGet(buffer.length());
+                writeStream.write(buffer).onFailure(testContext::failNow);
             });
     }
 
@@ -261,12 +261,12 @@ public class StreamCompatibilityTest {
 
         readStream
             .exceptionHandler(testContext::failNow)
-            .handler(buffer -> {
-                result.append(buffer.toString());
-            })
             .endHandler(v -> {
                 assertEquals(testData, result.toString());
                 testContext.completeNow();
+            })
+            .handler(buffer -> {
+                result.append(buffer.toString());
             });
     }
 }

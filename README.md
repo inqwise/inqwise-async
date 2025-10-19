@@ -72,6 +72,8 @@ The `stream` package within Inqwise Async offers classes that encapsulate Java's
 
 These classes manage the execution of blocking operations using a dedicated `ExecutorService`, ensuring that the Vert.x event loop remains unblocked.
 
+When chaining stream configuration methods, register `exceptionHandler(...)` and `endHandler(...)` before invoking `handler(...)` so that error and completion logic is ready before data emission begins.
+
 ## Examples
 
 ### Wrapping an InputStream as a ReadStream
