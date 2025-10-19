@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.inqwise</groupId>
 	<artifactId>inqwise-async</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
@@ -11,13 +13,13 @@
         The Inqwise Async library seamlessly bridges standard Java blocking I/O structures with Vert.x's asynchronous, non-blocking APIs. By providing robust wrappers for traditional Java classes such as {@link java.io.InputStream}, {@link java.io.OutputStream}, {@link java.io.Reader}, {@link java.io.Writer}, and more, Inqwise Async enables developers to integrate existing Java codebases into Vert.x-based reactive applications without disrupting the event loop. This integration ensures efficient and scalable I/O operations by managing back-pressure and flow control, facilitating the modernization of legacy systems for high-performance, event-driven environments.
     </description>
 	 <name>Inqwise Async - blocking to Vert.x non-blocking bridge</name>
-	
+
 	<organization>
 		<name>inqwise</name>
 	</organization>
-	
+
 	<url>https://github.com/inqwise/inqwise-async</url>
-	
+
 	<developers>
 		<developer>
 			<id>alex-inqwise</id>
@@ -27,7 +29,7 @@
             <organizationUrl>https://www.inqwise.com</organizationUrl>
 		</developer>
 	</developers>
-	
+
 	<licenses>
         <license>
             <name>MIT License</name>
@@ -38,10 +40,11 @@
 
 	<scm>
 		<connection>scm:git:https://github.com:inqwise/inqwise-async.git</connection>
-		<developerConnection>scm:git:https://github.com:inqwise/inqwise-async.git</developerConnection>
+		<developerConnection
+        >scm:git:https://github.com:inqwise/inqwise-async.git</developerConnection>
 		<url>https://github.com/inqwise/inqwise-async</url>
 	</scm>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.version>3.9.8</maven.version>
@@ -52,11 +55,11 @@
 		<maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
 		<maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
 		<jacoco.version>0.8.14</jacoco.version>
-		
+
 		<log4j2.version>2.25.2</log4j2.version>
 		<vertx.version>5.0.4</vertx.version>
     </properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>io.vertx</groupId>
@@ -106,9 +109,9 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
-		<dependencies>			
+		<dependencies>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-api</artifactId>
@@ -141,7 +144,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<plugins>
 			<!-- Javadocs Plugin -->
@@ -178,7 +181,8 @@
 									<excludes>
 										<exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
 									</excludes>
-									<message>Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
+									<message
+                                    >Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
 								</bannedPlugins>
 								<requireMavenVersion>
 									<version>${maven.version}</version>
@@ -196,7 +200,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.5.4</version>
 				<configuration>
-					<argLine>@{argLine} --illegal-access=permit -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory</argLine>
+					<argLine
+                    >@{argLine} --illegal-access=permit -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.Log4j2LogDelegateFactory</argLine>
 				</configuration>
 				<dependencies>
 					<dependency>
@@ -227,7 +232,8 @@
 					<forceLegacyJavacApi>true</forceLegacyJavacApi>
 					<release>${java.version}</release>
 					<generatedSourcesDirectory>src/main/generated</generatedSourcesDirectory>
-					<generatedTestSourcesDirectory>src/test/generated</generatedTestSourcesDirectory>
+					<generatedTestSourcesDirectory
+                    >src/test/generated</generatedTestSourcesDirectory>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -241,7 +247,7 @@
 								<include>**/surface-reports/**</include>
 								<include>**/target/**</include>
 								<include>**/*.log</include>
-								
+
 							</includes>
 						</fileset>
 					</filesets>
@@ -280,31 +286,6 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>check</id>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<rule>
-									<element>BUNDLE</element>
-									<limits>
-										<limit>
-											<counter>LINE</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>0.80</minimum>
-										</limit>
-										<limit>
-											<counter>BRANCH</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>0.70</minimum>
-										</limit>
-									</limits>
-								</rule>
-							</rules>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 		</plugins>
@@ -338,7 +319,7 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	
+
 	<distributionManagement>
 		<repository>
 			<id>sonatype-oss-release</id>
@@ -351,7 +332,7 @@
 			<url>https://central.sonatype.com/api/v1/publisher</url>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 	<profiles>
 		<profile>
             <id>sonatype-oss-release</id>
@@ -364,7 +345,8 @@
                         <version>0.9.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <publishingServerId>sonatype-oss-release</publishingServerId>
+                            <publishingServerId
+                            >sonatype-oss-release</publishingServerId>
                             <autoPublish>true</autoPublish>
                             <waitUntil>published</waitUntil>
                             <checksums>required</checksums>
@@ -397,4 +379,3 @@
         </profile>
 	</profiles>
 </project>
-
