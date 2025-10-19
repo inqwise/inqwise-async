@@ -4,7 +4,7 @@
 
 	<groupId>com.inqwise</groupId>
 	<artifactId>inqwise-async</artifactId>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.1.1</version>
 	<description>
         The Inqwise Async library seamlessly bridges standard Java blocking I/O structures with Vert.x's asynchronous, non-blocking APIs. By providing robust wrappers for traditional Java classes such as {@link java.io.InputStream}, {@link java.io.OutputStream}, {@link java.io.Reader}, {@link java.io.Writer}, and more, Inqwise Async enables developers to integrate existing Java codebases into Vert.x-based reactive applications without disrupting the event loop. This integration ensures efficient and scalable I/O operations by managing back-pressure and flow control, facilitating the modernization of legacy systems for high-performance, event-driven environments.
     </description>
@@ -38,7 +38,7 @@
 		<connection>scm:git:https://github.com/inqwise/inqwise-async.git</connection>
 		<developerConnection>scm:git:https://github.com/inqwise/inqwise-async.git</developerConnection>
 		<url>https://github.com/inqwise/inqwise-async</url>
-	  <tag>HEAD</tag>
+	  <tag>v1.1.1</tag>
   </scm>
 
 	<properties>
