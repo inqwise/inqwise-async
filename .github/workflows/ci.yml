@@ -32,6 +32,15 @@ jobs:
       - name: Run tests with coverage
         run: mvn clean test jacoco:report
 
+      - name: Verify coverage report exists
+        if: matrix.java == '21'
+        run: |
+          if [ ! -f target/site/jacoco/jacoco.xml ]; then
+            echo "Coverage report target/site/jacoco/jacoco.xml missing"
+            ls -R target || true
+            exit 1
+          fi
+
       - name: Generate test report
         uses: dorny/test-reporter@v2
         if: success() || failure()
@@ -48,7 +57,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./target/site/jacoco/jacoco.xml
           fail_ci_if_error: false
-          verbose: true
 
   build:
     name: Build and Verify
