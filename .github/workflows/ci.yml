@@ -89,7 +89,7 @@ jobs:
         run: mvn javadoc:javadoc
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: maven-artifacts
           path: |
