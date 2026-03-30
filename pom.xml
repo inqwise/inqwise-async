@@ -52,7 +52,7 @@
 		<maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
 		<jacoco.version>0.8.14</jacoco.version>
 
-		<log4j2.version>2.25.3</log4j2.version>
+		<log4j2.version>2.25.4</log4j2.version>
 		<vertx.version>5.0.10</vertx.version>
     </properties>
 
